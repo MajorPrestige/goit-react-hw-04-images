@@ -17,7 +17,7 @@ const ImageGallery = ({ imgName }) => {
   const [targetImg, setTargetImg] = useState('');
 
   useEffect(() => {
-    if (imgName === '') {
+    if (!imgName) {
       return;
     }
 
@@ -25,19 +25,9 @@ const ImageGallery = ({ imgName }) => {
 
     const fetchData = async () => {
       try {
-        const data = await api(imgName, page);
-
-        if (page === 1) {
-          setImg(data.hits);
-          setPage(1);
-          return;
-        }
-
-        if (page !== 1) {
-          setImg([...img, ...data.hits]);
-        }
-
+        const data = await api(imgName, 1);
         setTotalImg(data.total);
+        setImg(data.hits);
       } catch (error) {
         console.log(error.message);
       } finally {
@@ -46,7 +36,29 @@ const ImageGallery = ({ imgName }) => {
     };
 
     fetchData();
-  }, [img, imgName, page]);
+  }, [imgName]);
+
+  useEffect(() => {
+    if (page === 1) {
+      return;
+    }
+
+    setLoading(true);
+
+    const fetchData = async () => {
+      try {
+        const data = await api(imgName, page);
+        setTotalImg(data.total);
+        setImg([...img, ...data.hits]);
+      } catch (error) {
+        console.log(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page]);
 
   const getPageOnLoadMoreBtnClick = () => {
     setPage(prevState => prevState + 1);
