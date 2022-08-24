@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState } from 'react';
 import { ToastContainer } from 'react-toastify';
 import s from './App.module.css';
 import 'react-toastify/dist/ReactToastify.css';
@@ -6,45 +6,25 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import FirstPage from './FirstPage/FirstPage';
 
-export class App extends Component {
-  state = {
-    searchQuery: '',
-  };
+export const App = () => {
+  const [imgName, setImgName] = useState('');
 
-  getSearchQuery = searchQuery => {
-    this.setState({ searchQuery });
-  };
+  return (
+    <div className={s.App}>
+      {!imgName && <FirstPage setImgName={setImgName} imgName={imgName} />}
 
-  render() {
-    const { searchQuery } = this.state;
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={true}
+        pauseOnHover={false}
+        draggable
+      />
 
-    return (
-      <div className={s.App}>
-        {!searchQuery && (
-          <FirstPage
-            getSearchQuery={this.getSearchQuery}
-            searchQuery={searchQuery}
-          />
-        )}
-
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={true}
-          pauseOnHover={false}
-          draggable
-        />
-
-        {searchQuery && (
-          <Searchbar
-            getSearchQuery={this.getSearchQuery}
-            searchQuery={searchQuery}
-          />
-        )}
-        <ImageGallery searchQuery={searchQuery} />
-      </div>
-    );
-  }
-}
+      {imgName && <Searchbar setImgName={setImgName} imgName={imgName} />}
+      <ImageGallery imgName={imgName} />
+    </div>
+  );
+};
